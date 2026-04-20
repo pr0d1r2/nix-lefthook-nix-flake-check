@@ -13,8 +13,7 @@ setup() {
     cat > "$TMP/valid-flake/flake.nix" <<'NIX'
 {
   description = "test flake";
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-  outputs = { self, nixpkgs }: { };
+  outputs = { self }: { };
 }
 NIX
     cd "$TMP/valid-flake"
