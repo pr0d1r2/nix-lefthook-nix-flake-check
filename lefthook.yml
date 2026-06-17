@@ -73,11 +73,11 @@ pre-commit:
   commands:
     nix-flake-check:
       glob: "*.nix"
-      run: timeout ${LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT:-60} nix flake check
+      run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check
 
 pre-push:
   parallel: true
   commands:
     nix-flake-check:
       glob: "*.nix"
-      run: timeout ${LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT:-60} nix flake check
+      run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check

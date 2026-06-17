@@ -1,0 +1,31 @@
+#!/usr/bin/env bats
+
+setup() {
+    load "${BATS_LIB_PATH}/bats-support/load.bash"
+    load "${BATS_LIB_PATH}/bats-assert/load.bash"
+}
+
+@test "outputs 120 on Darwin" {
+    # shellcheck disable=SC2329
+    uname() { echo "Darwin"; }
+    export -f uname
+    run bash nix-flake-check-default-timeout.sh
+    assert_success
+    assert_output "120"
+}
+
+@test "outputs 60 on Linux" {
+    # shellcheck disable=SC2329
+    uname() { echo "Linux"; }
+    export -f uname
+    run bash nix-flake-check-default-timeout.sh
+    assert_success
+    assert_output "60"
+}
+
+@test "respects LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT override" {
+    export LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT=300
+    run bash nix-flake-check-default-timeout.sh
+    assert_success
+    assert_output "300"
+}
