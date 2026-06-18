@@ -49,6 +49,30 @@ NIX
     assert_success
 }
 
+@test "lefthook.yml pre-commit nix-flake-check glob includes flake.lock" {
+    run bash -c 'grep -A2 "nix-flake-check:" lefthook.yml | head -3'
+    assert_success
+    assert_output --partial "flake.lock"
+}
+
+@test "lefthook.yml pre-push nix-flake-check glob includes flake.lock" {
+    run bash -c 'awk "/pre-push:/,0" lefthook.yml | grep -A2 "nix-flake-check:" | head -3'
+    assert_success
+    assert_output --partial "flake.lock"
+}
+
+@test "lefthook-remote.yml pre-commit nix-flake-check glob includes flake.lock" {
+    run bash -c 'grep -A2 "nix-flake-check:" lefthook-remote.yml | head -3'
+    assert_success
+    assert_output --partial "flake.lock"
+}
+
+@test "lefthook-remote.yml pre-push nix-flake-check glob includes flake.lock" {
+    run bash -c 'awk "/pre-push:/,0" lefthook-remote.yml | grep -A2 "nix-flake-check:" | head -3'
+    assert_success
+    assert_output --partial "flake.lock"
+}
+
 @test "fails on a flake with syntax error" {
     mkdir -p "$TMP/bad-flake"
     cat > "$TMP/bad-flake/flake.nix" <<'NIX'
