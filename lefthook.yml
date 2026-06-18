@@ -72,12 +72,12 @@ pre-commit:
   parallel: true
   commands:
     nix-flake-check:
-      glob: "*.nix"
+      glob: "{*.nix,flake.lock}"
       run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check
 
 pre-push:
   parallel: true
   commands:
     nix-flake-check:
-      glob: "*.nix"
+      glob: "{*.nix,flake.lock}"
       run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check

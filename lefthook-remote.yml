@@ -2,11 +2,11 @@
 pre-commit:
   commands:
     nix-flake-check:
-      glob: "*.nix"
+      glob: "{*.nix,flake.lock}"
       run: timeout "${LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT:-$(if [ "$(uname -s)" = "Darwin" ]; then echo 120; else echo 60; fi)}" nix flake check
 
 pre-push:
   commands:
     nix-flake-check:
-      glob: "*.nix"
+      glob: "{*.nix,flake.lock}"
       run: timeout "${LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT:-$(if [ "$(uname -s)" = "Darwin" ]; then echo 120; else echo 60; fi)}" nix flake check
