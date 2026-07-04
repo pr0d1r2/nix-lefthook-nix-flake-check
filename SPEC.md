@@ -66,7 +66,7 @@ nix-lefthook-nix-flake-check is a Nix flake that packages `nix flake check` as a
 | status | id | goal |
 |---|---|---|
 | `x` | T9 | Create `nix-flake-check-validate-timeout.sh` that validates its argument is a positive integer (exit 0 valid, exit 1 otherwise) with 1-to-1 bats test `tests/unit/nix-flake-check-validate-timeout.bats` covering positive int, non-numeric string, zero, negative, empty (§B.3, §V.2, §V.5) |
-| `.` | T10 | Wire `bash nix-flake-check-validate-timeout.sh` guard into `nix-flake-check-default-timeout.sh` so an invalid `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` falls through to the platform default; extend `tests/unit/nix-flake-check-default-timeout.bats` with cases for non-numeric and non-positive env values falling back correctly — subsumes T3 (§B.3, §V.10, §V.2) |
+| `x` | T10 | Wire `bash nix-flake-check-validate-timeout.sh` guard into `nix-flake-check-default-timeout.sh` so an invalid `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` falls through to the platform default; extend `tests/unit/nix-flake-check-default-timeout.bats` with cases for non-numeric and non-positive env values falling back correctly — subsumes T3 (§B.3, §V.10, §V.2) |
 | `.` | T1 | Add `.envrc` `watch_file` entries for `dev.sh`, `flake.nix`, and `flake.lock` per direnv skill rules |
 | `.` | T2 | Add bats test for `lefthook-nix-flake-check.sh` verifying `exec nix flake check` invocation with a mock |
 | `.` | T3 | Add edge-case test for `nix-flake-check-default-timeout.sh` with non-numeric `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` |
