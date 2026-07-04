@@ -54,3 +54,10 @@ teardown() {
     source "$TMPDIR/dev.sh"
     assert [ ! -f "$LEFTHOOK_LOG" ]
 }
+
+@test "skips lefthook install when HOME is unset" {
+    cd "$TMPDIR/repo"
+    rm "$TMPDIR/repo/.git/hooks/pre-commit"
+    run bash -c 'unset HOME; export PATH="'"$TMPDIR/bin"':$PATH"; export LEFTHOOK_LOG="'"$TMPDIR/log"'"; source "'"$TMPDIR/dev.sh"'"; [ ! -f "'"$TMPDIR/log"'" ]'
+    assert_success
+}
