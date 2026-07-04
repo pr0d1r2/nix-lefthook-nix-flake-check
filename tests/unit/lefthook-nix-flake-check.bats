@@ -8,6 +8,18 @@ setup() {
     TMP="$BATS_TEST_TMPDIR"
 }
 
+@test "exec nix flake check is invoked via script" {
+    mkdir -p "$TMP/bin"
+    cat > "$TMP/bin/nix" <<'SH'
+#!/usr/bin/env bash
+echo "$*"
+SH
+    chmod +x "$TMP/bin/nix"
+    PATH="$TMP/bin:$PATH" run bash lefthook-nix-flake-check.sh
+    assert_success
+    assert_output "flake check"
+}
+
 @test "passes on a valid flake" {
     mkdir -p "$TMP/valid-flake"
     cat > "$TMP/valid-flake/flake.nix" <<'NIX'
