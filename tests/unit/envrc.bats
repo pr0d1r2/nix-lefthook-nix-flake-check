@@ -42,6 +42,16 @@ teardown() {
   assert_line "flake.lock"
 }
 
+@test "watches lefthook-nix-flake-check.sh for changes" {
+  run bash -c '
+    watch_file() { for f in "$@"; do echo "$f"; done; }
+    use() { :; }
+    source "'"$TMPDIR/.envrc"'"
+  '
+  assert_success
+  assert_line "lefthook-nix-flake-check.sh"
+}
+
 @test "uses flake" {
   run bash -c '
     watch_file() { :; }
