@@ -70,7 +70,7 @@ nix-lefthook-nix-flake-check is a Nix flake that packages `nix flake check` as a
 | `x` | T1 | Add `.envrc` `watch_file` entries for `dev.sh`, `flake.nix`, and `flake.lock` per direnv skill rules |
 | `x` | T2 | Add bats test for `lefthook-nix-flake-check.sh` verifying `exec nix flake check` invocation with a mock |
 | `x` | T3 | Add edge-case test for `nix-flake-check-default-timeout.sh` with non-numeric `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` |
-| `.` | T4 | Update README timeout docs to reflect platform-aware defaults (currently says "default is 60 seconds" but Darwin is 120) |
+| `x` | T4 | Update README timeout docs to reflect platform-aware defaults (currently says "default is 60 seconds" but Darwin is 120) |
 | `.` | T5 | Add `nix-flake-check-default-timeout.sh` test for unknown `uname -s` output (e.g. FreeBSD falls through to 60) |
 | `.` | T6 | Add markdownlint lefthook check for `*.md` files to local `lefthook.yml` commands (currently only via remote) |
 | `.` | T7 | Validate `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` is a positive integer in `nix-flake-check-default-timeout.sh` |
@@ -78,7 +78,7 @@ nix-lefthook-nix-flake-check is a Nix flake that packages `nix flake check` as a
 
 ## §B — Bugs / Known Issues
 
-1. **README timeout default is misleading**: README states "The default timeout is 60 seconds" but `lefthook-remote.yml` and `nix-flake-check-default-timeout.sh` use 120 on Darwin. The "Option B" YAML example hardcodes `${LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT:-60}` without platform awareness.
+1. ~~**README timeout default is misleading**~~: Fixed — README now documents platform-aware defaults (120 s on Darwin, 60 s on Linux) and the Option B YAML example uses platform detection.
 2. **`.envrc` missing `watch_file` directives**: The `.envrc` contains only `use flake` but does not `watch_file` on `flake.nix`, `flake.lock`, or `dev.sh`, so direnv will not auto-reload when those files change (violates the direnv skill rule).
 3. **No input validation on `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT`**: A non-numeric value (e.g. `export LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT=abc`) is passed straight to `timeout`, which will fail with a confusing error.
 4. **`lefthook-nix-flake-check.sh` is only indirectly tested**: The bats test for it runs `nix flake check` directly rather than invoking the `lefthook-nix-flake-check` wrapper script, so the `exec` path in the script itself is not exercised.
