@@ -49,14 +49,14 @@ nix-lefthook-nix-flake-check is a Nix flake that packages `nix flake check` as a
 ### Environment variables
 
 | Variable | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` | integer (seconds) | 120 (Darwin) / 60 (Linux) | Override the `nix flake check` timeout |
 | `BATS_LIB_PATH` | path | Set by devShell | Path to bats helper libraries |
 
 ### Flake inputs
 
 | Input | Source | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `nixpkgs-lock` | `github:pr0d1r2/nixpkgs-lock` | Pinned nixpkgs |
 | `nix-dev-shell-agentic` | `github:pr0d1r2/nix-dev-shell-agentic` | Agentic devShell builder |
 | `nix-lefthook-bats-unit` | `github:pr0d1r2/nix-lefthook-bats-unit` | Bats unit test runner |
@@ -64,7 +64,7 @@ nix-lefthook-nix-flake-check is a Nix flake that packages `nix flake check` as a
 ## §T — Tasks
 
 | status | id | goal |
-|---|---|---|
+| --- | --- | --- |
 | `x` | T9 | Create `nix-flake-check-validate-timeout.sh` that validates its argument is a positive integer (exit 0 valid, exit 1 otherwise) with 1-to-1 bats test `tests/unit/nix-flake-check-validate-timeout.bats` covering positive int, non-numeric string, zero, negative, empty (§B.3, §V.2, §V.5) |
 | `x` | T10 | Wire `bash nix-flake-check-validate-timeout.sh` guard into `nix-flake-check-default-timeout.sh` so an invalid `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` falls through to the platform default; extend `tests/unit/nix-flake-check-default-timeout.bats` with cases for non-numeric and non-positive env values falling back correctly — subsumes T3 (§B.3, §V.10, §V.2) |
 | `x` | T1 | Add `.envrc` `watch_file` entries for `dev.sh`, `flake.nix`, and `flake.lock` per direnv skill rules |
@@ -72,7 +72,7 @@ nix-lefthook-nix-flake-check is a Nix flake that packages `nix flake check` as a
 | `x` | T3 | Add edge-case test for `nix-flake-check-default-timeout.sh` with non-numeric `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` |
 | `x` | T4 | Update README timeout docs to reflect platform-aware defaults (currently says "default is 60 seconds" but Darwin is 120) |
 | `x` | T5 | Add `nix-flake-check-default-timeout.sh` test for unknown `uname -s` output (e.g. FreeBSD falls through to 60) |
-| `.` | T6 | Add markdownlint lefthook check for `*.md` files to local `lefthook.yml` commands (currently only via remote) |
+| `x` | T6 | Add markdownlint lefthook check for `*.md` files to local `lefthook.yml` commands (currently only via remote) |
 | `.` | T7 | Validate `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` is a positive integer in `nix-flake-check-default-timeout.sh` |
 | `.` | T8 | Add SPEC.md linting exclusion or ensure it passes markdownlint |
 
