@@ -140,3 +140,12 @@ setup() {
     assert_success
     assert_output "60"
 }
+
+@test "falls through to 60 for unknown uname -s output" {
+    # shellcheck disable=SC2329
+    uname() { echo "FreeBSD"; }
+    export -f uname
+    run bash nix-flake-check-default-timeout.sh
+    assert_success
+    assert_output "60"
+}
