@@ -74,6 +74,9 @@ pre-commit:
     nix-flake-check:
       glob: "{*.nix,flake.lock}"
       run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check
+    markdownlint:
+      glob: "*.md"
+      run: timeout 30 lefthook-markdownlint {staged_files}
 
 pre-push:
   parallel: true
@@ -81,3 +84,6 @@ pre-push:
     nix-flake-check:
       glob: "{*.nix,flake.lock}"
       run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check
+    markdownlint:
+      glob: "*.md"
+      run: timeout 30 lefthook-markdownlint {all_files}
