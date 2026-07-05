@@ -73,7 +73,7 @@ nix-lefthook-nix-flake-check is a Nix flake that packages `nix flake check` as a
 | `x` | T4 | Update README timeout docs to reflect platform-aware defaults (currently says "default is 60 seconds" but Darwin is 120) |
 | `x` | T5 | Add `nix-flake-check-default-timeout.sh` test for unknown `uname -s` output (e.g. FreeBSD falls through to 60) |
 | `x` | T6 | Add markdownlint lefthook check for `*.md` files to local `lefthook.yml` commands (currently only via remote) |
-| `.` | T7 | Validate `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` is a positive integer in `nix-flake-check-default-timeout.sh` |
+| `x` | T7 | Validate `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT` is a positive integer in `nix-flake-check-default-timeout.sh` |
 | `.` | T8 | Add SPEC.md linting exclusion or ensure it passes markdownlint |
 
 ## §B — Bugs / Known Issues
