@@ -96,3 +96,47 @@ setup() {
     assert_success
     assert_output "60"
 }
+
+@test "falls back to Darwin default when LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT is a float" {
+    # shellcheck disable=SC2329
+    uname() { echo "Darwin"; }
+    export -f uname
+    # shellcheck disable=SC2030,SC2031
+    export LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT=1.5
+    run bash nix-flake-check-default-timeout.sh
+    assert_success
+    assert_output "120"
+}
+
+@test "falls back to Linux default when LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT is a float" {
+    # shellcheck disable=SC2329
+    uname() { echo "Linux"; }
+    export -f uname
+    # shellcheck disable=SC2030,SC2031
+    export LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT=1.5
+    run bash nix-flake-check-default-timeout.sh
+    assert_success
+    assert_output "60"
+}
+
+@test "falls back to Darwin default when LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT is mixed alphanumeric" {
+    # shellcheck disable=SC2329
+    uname() { echo "Darwin"; }
+    export -f uname
+    # shellcheck disable=SC2030,SC2031
+    export LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT=12abc
+    run bash nix-flake-check-default-timeout.sh
+    assert_success
+    assert_output "120"
+}
+
+@test "falls back to Linux default when LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT is mixed alphanumeric" {
+    # shellcheck disable=SC2329
+    uname() { echo "Linux"; }
+    export -f uname
+    # shellcheck disable=SC2030,SC2031
+    export LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT=12abc
+    run bash nix-flake-check-default-timeout.sh
+    assert_success
+    assert_output "60"
+}
