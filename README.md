@@ -45,16 +45,20 @@ Add to `lefthook.yml`:
 pre-commit:
   commands:
     nix-flake-check:
-      glob: "*.nix"
-      run: timeout ${LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT:-60} nix flake check
+      glob: "{*.nix,flake.lock}"
+      run: >
+        timeout "${LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT:-$(
+          if [ "$(uname -s)" = "Darwin" ]; then echo 120; else echo 60; fi
+        )}" nix flake check
 ```
 
 ### Configuring timeout
 
-The default timeout is 60 seconds. Override per-repo via environment variable:
+The default timeout is platform-aware: 120 seconds on macOS (Darwin),
+60 seconds on Linux. Override per-repo via environment variable:
 
 ```bash
-export LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT=120
+export LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT=90
 ```
 
 ## Development
