@@ -44,3 +44,13 @@ setup() {
     run bash nix-flake-check-validate-timeout.sh
     assert_failure
 }
+
+@test "rejects float" {
+    run bash nix-flake-check-validate-timeout.sh 1.5
+    assert_failure
+}
+
+@test "rejects mixed alphanumeric" {
+    run bash nix-flake-check-validate-timeout.sh 12abc
+    assert_failure
+}
