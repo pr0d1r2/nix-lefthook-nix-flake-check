@@ -11,10 +11,6 @@ remotes:
     ref: main
     configs:
       - lefthook-remote.yml
-  - git_url: https://github.com/pr0d1r2/nix-lefthook-shfmt
-    ref: main
-    configs:
-      - lefthook-remote.yml
   - git_url: https://github.com/pr0d1r2/nix-lefthook-statix
     ref: main
     configs:
@@ -77,6 +73,9 @@ pre-commit:
     markdownlint:
       glob: "*.md"
       run: timeout 30 lefthook-markdownlint {staged_files}
+    shfmt:
+      glob: "*.sh"
+      run: timeout 30 shfmt -d -i 2 -ci {staged_files}
 
 pre-push:
   parallel: true
@@ -87,3 +86,6 @@ pre-push:
     markdownlint:
       glob: "*.md"
       run: timeout 30 lefthook-markdownlint {all_files}
+    shfmt:
+      glob: "*.sh"
+      run: timeout 30 shfmt -d -i 2 -ci {all_files}
