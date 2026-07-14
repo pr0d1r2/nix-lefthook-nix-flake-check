@@ -1,7 +1,6 @@
 ---
-MD013:
-  line_length: 300
-  tables: false
+MD013: false
+MD041: false
 MD024:
   siblings_only: true
 MD060: false

@@ -4,11 +4,11 @@ pre-commit:
   commands:
     markdownlint:
       glob: "*.md"
-      exclude: "^(\\.claude/skills/)"
+      exclude: [".claude/skills/**"]
       run: timeout ${LEFTHOOK_MARKDOWNLINT_TIMEOUT:-30} lefthook-markdownlint {staged_files}
     markdownlint-agentic:
       glob: "*.md"
-      exclude: "^(README|CHANGELOG|SPEC|CONTRIBUTING)\\.md$"
+      exclude: ["README.md", "CHANGELOG.md", "SPEC.md", "CONTRIBUTING.md"]
       run: timeout ${LEFTHOOK_MARKDOWNLINT_AGENTIC_TIMEOUT:-30} lefthook-markdownlint-agentic {staged_files}
     yamllint:
       glob: "*.{yml,yaml}"
@@ -18,12 +18,12 @@ pre-push:
   commands:
     markdownlint:
       glob: "*.md"
-      exclude: "^(\\.claude/skills/)"
-      run: timeout ${LEFTHOOK_MARKDOWNLINT_TIMEOUT:-30} lefthook-markdownlint {push_files}
+      exclude: [".claude/skills/**"]
+      run: timeout ${LEFTHOOK_MARKDOWNLINT_TIMEOUT:-30} lefthook-markdownlint {all_files}
     markdownlint-agentic:
       glob: "*.md"
-      exclude: "^(README|CHANGELOG|SPEC|CONTRIBUTING)\\.md$"
-      run: timeout ${LEFTHOOK_MARKDOWNLINT_AGENTIC_TIMEOUT:-30} lefthook-markdownlint-agentic {push_files}
+      exclude: ["README.md", "CHANGELOG.md", "SPEC.md", "CONTRIBUTING.md"]
+      run: timeout ${LEFTHOOK_MARKDOWNLINT_AGENTIC_TIMEOUT:-30} lefthook-markdownlint-agentic {all_files}
     yamllint:
       glob: "*.{yml,yaml}"
-      run: timeout ${LEFTHOOK_YAMLLINT_TIMEOUT:-30} lefthook-yamllint {push_files}
+      run: timeout ${LEFTHOOK_YAMLLINT_TIMEOUT:-30} lefthook-yamllint {all_files}
