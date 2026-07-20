@@ -1,5 +1,5 @@
 {
-  description = "CHANGEME";
+  description = "Lefthook-compatible nix flake check runner";
 
   nixConfig = {
     extra-substituters = [ "https://pr0d1r2.cachix.org" ];
@@ -54,6 +54,11 @@
     in
     {
       packages = forAllSystems (pkgs: {
+        default = pkgs.writeShellApplication {
+          name = "lefthook-nix-flake-check";
+          runtimeInputs = [ pkgs.nix ];
+          text = builtins.readFile ./lefthook-nix-flake-check.sh;
+        };
         setting = (set-and-setting.lib.mkSetting { inherit pkgs; }).materialized;
       });
 
@@ -90,6 +95,7 @@
             inherit pkgs;
             projectRoot = ./.;
           };
+          consumer-cli = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
           default = pkgs.runCommand "checks" { } "touch $out";
         }
       );
