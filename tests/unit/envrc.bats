@@ -52,6 +52,16 @@ teardown() {
   assert_line "lefthook-nix-flake-check.sh"
 }
 
+@test "watches nix/apps/confirm.sh for changes" {
+  run bash -c '
+    watch_file() { for f in "$@"; do echo "$f"; done; }
+    use() { :; }
+    source "'"$TMPDIR/.envrc"'"
+  '
+  assert_success
+  assert_line "nix/apps/confirm.sh"
+}
+
 @test "uses flake" {
   run bash -c '
     watch_file() { :; }
