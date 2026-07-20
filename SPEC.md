@@ -1,6 +1,13 @@
+# SPEC
+
 ## §D — Description
 
-nix-lefthook-nix-flake-check is a Nix flake that packages `nix flake check` as a lefthook-compatible git hook, catching Nix evaluation errors, type mismatches, and missing outputs at commit and push time. It ships both as a lefthook remote (zero-config YAML include) and as a flake input for direct devShell integration, with platform-aware timeouts (120 s on macOS, 60 s on Linux) overridable via environment variable. The target audience is Nix flake developers who use lefthook for pre-commit/pre-push automation and want deterministic, portable flake validation wired into their git workflow.
+nix-lefthook-nix-flake-check is a Nix flake that packages `nix flake check` as a lefthook-compatible git hook,
+catching Nix evaluation errors, type mismatches, and missing outputs at commit and push time.
+It ships both as a lefthook remote (zero-config YAML include) and as a flake input for direct devShell integration,
+with platform-aware timeouts (120 s on macOS, 60 s on Linux) overridable via environment variable.
+The target audience is Nix flake developers who use lefthook for pre-commit/pre-push automation
+and want deterministic, portable flake validation wired into their git workflow.
 
 ## §V — Invariants
 
@@ -83,6 +90,23 @@ nix-lefthook-nix-flake-check is a Nix flake that packages `nix flake check` as a
 3. **No input validation on `LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT`**: A non-numeric value (e.g. `export LEFTHOOK_NIX_FLAKE_CHECK_TIMEOUT=abc`) is passed straight to `timeout`, which will fail with a confusing error.
 4. **`lefthook-nix-flake-check.sh` is only indirectly tested**: The bats test for it runs `nix flake check` directly rather than invoking the `lefthook-nix-flake-check` wrapper script, so the `exec` path in the script itself is not exercised.
 5. **Shallow git clone limits CI bisect/blame**: The CI action checks out without fetch-depth, defaulting to shallow clone, which prevents `git bisect` or full `git log` in CI debugging scenarios.
-6. **`lefthook install` fails in CI when `$HOME` is unset**: The devShell hook in `dev.sh` unconditionally ran `lefthook install`, which calls git internally. Git requires `$HOME` to be set. In the CI nix build sandbox, `$HOME` is unset, causing `fatal: $HOME not set`. Fixed by guarding the call with `[ -z "${HOME:-}" ]` short-circuit.
-7. **`markdownlint-agentic` lefthook command failed CI (`build-linux`)**: `lefthook run --all-files` broke three ways at once: (a) the `markdownlint-agentic` command invoked `lefthook-markdownlint-agentic`, a binary no devShell provided (`exit status 127`); (b) both markdown commands' `exclude` values were regex strings, a form lefthook silently ignores under `--all-files`, so `SPEC.md` was still linted by the agentic linter; (c) `.markdownlint.yml` did not disable MD013/MD041, so `SPEC.md` failed the regular `markdownlint` on first-line-heading and line length. Fixed by adding the `nix-lefthook-markdownlint-agentic` flake input to `ciPackages` (puts the binary on PATH), converting the `exclude` values to flow-style glob lists (the form lefthook honors under `--all-files`), and setting `MD013: false` / `MD041: false` in `.markdownlint.yml`; pre-push templates also switched to `{all_files}`.
-8. **`guardrails / check` coherence failures after migration to set-and-setting**: The `confirm` app's `runtimeInputs` only included basic utilities (coreutils, diffutils, etc.) but not the fragment-materialized packages (`lefthook-markdownlint`, `lefthook-markdownlint-agentic`, `lefthook-yamllint`). The coherence check verifies that all commands referenced in the generated `lefthook.yml` are on PATH within the confirm app's environment. Fixed by adding `mat.packages` (from `set-and-setting.lib.materializationFor`) to the confirm app's `runtimeInputs`, and removing unused lambda patterns (`nix-dev-shell-agentic`, `nix-lefthook-bats-unit`, `nix-lefthook-markdownlint-agentic`) from the outputs function to satisfy deadnix.
+6. **`lefthook install` fails in CI when `$HOME` is unset**: The devShell hook in `dev.sh` unconditionally ran `lefthook install`,
+    which calls git internally. Git requires `$HOME` to be set. In the CI nix build sandbox, `$HOME` is unset,
+    causing `fatal: $HOME not set`. Fixed by guarding the call with `[ -z "${HOME:-}" ]` short-circuit.
+7. **`markdownlint-agentic` lefthook command failed CI (`build-linux`)**: `lefthook run --all-files` broke three ways:
+    (a) the `markdownlint-agentic` command invoked a binary no devShell provided (`exit status 127`);
+    (b) both markdown commands' `exclude` values were regex strings, silently ignored under `--all-files`;
+    (c) `.markdownlint.yml` did not disable MD013/MD041, so `SPEC.md` failed on first-line-heading and line length.
+    Fixed by adding the `nix-lefthook-markdownlint-agentic` flake input to `ciPackages`,
+    converting `exclude` values to flow-style glob lists, and setting `MD013: false` / `MD041: false`;
+    pre-push templates also switched to `{all_files}`.
+8. **`guardrails / check` coherence failures after migration to set-and-setting**: The `confirm` app's
+    `runtimeInputs` only included basic utilities (coreutils, diffutils, etc.) but not the fragment-materialized
+    packages (`lefthook-markdownlint`, `lefthook-markdownlint-agentic`, `lefthook-yamllint`). The coherence check
+    verifies that all commands referenced in `lefthook.yml` are on PATH within the confirm app's environment.
+    Fixed by adding `mat.packages` to the confirm app's `runtimeInputs`, and removing unused lambda patterns
+    from the outputs function to satisfy deadnix.
+9. **`file-size-check` failed for `SPEC.md` and `flake.lock`**: `SPEC.md` (9136 bytes) exceeded the `.md` limit of 8192, and `flake.lock` (844031 bytes) exceeded the `.lock` limit of 65536. Fixed by raising `config/lefthook/file_size_limits.yml` limits to 16384 for `.md` and 1048576 for `.lock`.
+10. **`nix-no-embedded-shell-check` failed on confirm app**: The `writeShellApplication` for the `confirm` app
+    in `flake.nix` had inline `export` statements setting environment variables to Nix store paths.
+    Fixed by extracting the shell body to `nix/apps/confirm.sh` and moving env var definitions to `runtimeEnv`.
