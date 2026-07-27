@@ -112,3 +112,5 @@ and want deterministic, portable flake validation wired into their git workflow.
     Fixed by extracting the shell body to `nix/apps/confirm.sh` and moving env var definitions to `runtimeEnv`.
 11. **`file-size-check` failed after the pin refresh enlarged `flake.lock`**: The generated lockfile grew to
     1122619 bytes, exceeding its 1048576-byte limit. Fixed by raising the explicit `.lock` limit to 2097152 bytes.
+12. **`file-size-check` failed after another pin refresh enlarged `flake.lock`**: The generated lockfile grew to
+    2345178 bytes, exceeding its 2097152-byte limit. Fixed by raising the explicit `.lock` limit to 4194304 bytes.
