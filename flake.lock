@@ -83657,7 +83657,11 @@
           "nixpkgs"
         ],
         "nixpkgs-lock": "nixpkgs-lock_198",
-        "set-and-setting": "set-and-setting_29"
+        "set-and-setting": "set-and-setting_29",
+        "set-and-setting-core": [
+          "set-and-setting",
+          "set-and-setting"
+        ]
       }
     },
     "rtk-src": {
