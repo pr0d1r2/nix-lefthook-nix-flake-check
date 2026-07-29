@@ -114,3 +114,7 @@ and want deterministic, portable flake validation wired into their git workflow.
     1122619 bytes, exceeding its 1048576-byte limit. Fixed by raising the explicit `.lock` limit to 2097152 bytes.
 12. **`file-size-check` failed after another pin refresh enlarged `flake.lock`**: The generated lockfile grew to
     2345178 bytes, exceeding its 2097152-byte limit. Fixed by raising the explicit `.lock` limit to 4194304 bytes.
+13. **`attribute 'lib' missing` after pin refresh**: The `set-and-setting` flake was updated to a version that
+    no longer exports `lib` directly — the library functions moved to a nested `set-and-setting/set-and-setting`
+    input. Fixed by adding a `set-and-setting-core` follows input that tracks the inner `set-and-setting` and
+    updating all `set-and-setting.lib.*` and `${set-and-setting}/...` references to use `set-and-setting-core`.

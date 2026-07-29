@@ -11,6 +11,7 @@
     nixpkgs.follows = "nixpkgs-lock/nixpkgs";
 
     set-and-setting.url = "github:pr0d1r2/set-and-setting";
+    set-and-setting-core.follows = "set-and-setting/set-and-setting";
 
     nix-dev-shell-agentic = {
       url = "github:pr0d1r2/nix-dev-shell-agentic";
@@ -30,7 +31,7 @@
     {
       self,
       nixpkgs,
-      set-and-setting,
+      set-and-setting-core,
       ...
     }:
     let
@@ -59,16 +60,16 @@
           runtimeInputs = [ pkgs.nix ];
           text = builtins.readFile ./lefthook-nix-flake-check.sh;
         };
-        setting = (set-and-setting.lib.mkSetting { inherit pkgs; }).materialized;
+        setting = (set-and-setting-core.lib.mkSetting { inherit pkgs; }).materialized;
       });
 
       devShells = forAllSystems (
         pkgs:
         let
-          mat = set-and-setting.lib.materializationFor { inherit pkgs fragments; };
+          mat = set-and-setting-core.lib.materializationFor { inherit pkgs fragments; };
           sys = pkgs.stdenv.hostPlatform.system;
         in
-        set-and-setting.lib.mkDevShells {
+        set-and-setting-core.lib.mkDevShells {
           inherit pkgs;
           basePackages = mat.packages;
           settingHook = ''
@@ -76,8 +77,8 @@
             _assemble_out="$(mktemp -d)"
             FRAGMENTS="${builtins.concatStringsSep " " fragments}" \
               out="$_assemble_out" \
-              FRAGMENTS_DIR="${set-and-setting}/setting/integrations/lefthook" \
-              bash "${set-and-setting}/setting/lib/assemble-lefthook.sh"
+              FRAGMENTS_DIR="${set-and-setting-core}/setting/integrations/lefthook" \
+              bash "${set-and-setting-core}/setting/lib/assemble-lefthook.sh"
             cp -f "$_assemble_out/lefthook.yml" lefthook.yml
             rm -rf "$_assemble_out"
           '';
@@ -86,12 +87,12 @@
 
       checks = forAllSystems (
         pkgs:
-        (set-and-setting.lib.checksFor {
+        (set-and-setting-core.lib.checksFor {
           inherit pkgs fragments;
           src = ./.;
         })
         // {
-          dep-graph = set-and-setting.lib.mkDepGraphCheck {
+          dep-graph = set-and-setting-core.lib.mkDepGraphCheck {
             inherit pkgs;
             projectRoot = ./.;
           };
@@ -103,7 +104,7 @@
       apps = forAllSystems (
         pkgs:
         let
-          mat = set-and-setting.lib.materializationFor { inherit pkgs fragments; };
+          mat = set-and-setting-core.lib.materializationFor { inherit pkgs fragments; };
         in
         {
           confirm = {
@@ -121,12 +122,12 @@
                 ]
                 ++ mat.packages;
                 runtimeEnv = {
-                  FRAGMENTS_DIR = "${set-and-setting}/setting/integrations/lefthook";
-                  ASSEMBLE_SCRIPT = "${set-and-setting}/setting/lib/assemble-lefthook.sh";
-                  DETECT_SCRIPT = "${set-and-setting}/setting/lib/detect-fragments.sh";
+                  FRAGMENTS_DIR = "${set-and-setting-core}/setting/integrations/lefthook";
+                  ASSEMBLE_SCRIPT = "${set-and-setting-core}/setting/lib/assemble-lefthook.sh";
+                  DETECT_SCRIPT = "${set-and-setting-core}/setting/lib/detect-fragments.sh";
                   SETTING_SRC = "${self.packages.${pkgs.stdenv.hostPlatform.system}.setting}";
-                  CONFIRM_SCRIPT = "${set-and-setting}/lib/confirm.sh";
-                  CONFIRM_REV = set-and-setting.rev or "unknown";
+                  CONFIRM_SCRIPT = "${set-and-setting-core}/lib/confirm.sh";
+                  CONFIRM_REV = set-and-setting-core.rev or "unknown";
                 };
                 text = builtins.readFile ./nix/apps/confirm.sh;
               }
