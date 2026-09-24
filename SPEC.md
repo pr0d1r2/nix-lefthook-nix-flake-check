@@ -121,3 +121,6 @@ and want deterministic, portable flake validation wired into their git workflow.
 14. **Bats runner output directory removed by tests**: `dev.bats` and `envrc.bats` assigned their test scratch
     directory to the reserved `TMPDIR` variable, then deleted it during teardown, removing Bats' active output
     directory and causing `teardown_file failed` errors. Fixed by using the test-local `TEST_TMPDIR` variable.
+15. **Guardrails could not validate the generated lefthook configuration**: `lefthook.yml` was ignored and absent
+    from the repository, but the guardrails confirm app requires it for completeness and executability checks. Fixed
+    by committing the canonical generated `lefthook.yml`.
