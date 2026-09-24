@@ -124,3 +124,6 @@ and want deterministic, portable flake validation wired into their git workflow.
 15. **Guardrails could not validate the generated lefthook configuration**: `lefthook.yml` was ignored and absent
     from the repository, but the guardrails confirm app requires it for completeness and executability checks. Fixed
     by committing the canonical generated `lefthook.yml`.
+16. **Bats setup failed in the guardrails shell**: The devShell exposed the Bats runner without sourcing `dev.sh`
+    or providing its helper libraries, leaving `BATS_LIB_PATH` unset and causing every unit test to fail in `setup`.
+    Fixed by adding Bats with its support libraries to the devShell and evaluating the documented hook there.

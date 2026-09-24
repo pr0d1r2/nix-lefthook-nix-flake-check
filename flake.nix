@@ -68,10 +68,15 @@
         let
           mat = set-and-setting-core.lib.materializationFor { inherit pkgs fragments; };
           sys = pkgs.stdenv.hostPlatform.system;
+          batsWithLibs = pkgs.bats.withLibraries (p: [
+            p.bats-support
+            p.bats-assert
+            p.bats-file
+          ]);
         in
         set-and-setting-core.lib.mkDevShells {
           inherit pkgs;
-          basePackages = mat.packages;
+          basePackages = mat.packages ++ [ batsWithLibs ];
           settingHook = ''
             ${self.packages.${sys}.setting}/bin/sync-setting .
             _assemble_out="$(mktemp -d)"
@@ -81,6 +86,7 @@
               bash "${set-and-setting-core}/setting/lib/assemble-lefthook.sh"
             cp -f "$_assemble_out/lefthook.yml" lefthook.yml
             rm -rf "$_assemble_out"
+            ${builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsWithLibs}" ] (builtins.readFile ./dev.sh)}
           '';
         }
       );
