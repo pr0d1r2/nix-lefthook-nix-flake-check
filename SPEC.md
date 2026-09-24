@@ -118,3 +118,6 @@ and want deterministic, portable flake validation wired into their git workflow.
     no longer exports `lib` directly — the library functions moved to a nested `set-and-setting/set-and-setting`
     input. Fixed by adding a `set-and-setting-core` follows input that tracks the inner `set-and-setting` and
     updating all `set-and-setting.lib.*` and `${set-and-setting}/...` references to use `set-and-setting-core`.
+14. **Bats runner output directory removed by tests**: `dev.bats` and `envrc.bats` assigned their test scratch
+    directory to the reserved `TMPDIR` variable, then deleted it during teardown, removing Bats' active output
+    directory and causing `teardown_file failed` errors. Fixed by using the test-local `TEST_TMPDIR` variable.

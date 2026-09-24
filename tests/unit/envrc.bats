@@ -4,19 +4,19 @@ setup() {
   load "${BATS_LIB_PATH}/bats-support/load.bash"
   load "${BATS_LIB_PATH}/bats-assert/load.bash"
 
-  TMPDIR="$(mktemp -d)"
-  cp .envrc "$TMPDIR/.envrc"
+  TEST_TMPDIR="$(mktemp -d)"
+  cp .envrc "$TEST_TMPDIR/.envrc"
 }
 
 teardown() {
-  rm -rf "$TMPDIR"
+  rm -rf "$TEST_TMPDIR"
 }
 
 @test "watches dev.sh for changes" {
   run bash -c '
     watch_file() { for f in "$@"; do echo "$f"; done; }
     use() { :; }
-    source "'"$TMPDIR/.envrc"'"
+    source "'"$TEST_TMPDIR/.envrc"'"
   '
   assert_success
   assert_line "dev.sh"
@@ -26,7 +26,7 @@ teardown() {
   run bash -c '
     watch_file() { for f in "$@"; do echo "$f"; done; }
     use() { :; }
-    source "'"$TMPDIR/.envrc"'"
+    source "'"$TEST_TMPDIR/.envrc"'"
   '
   assert_success
   assert_line "flake.nix"
@@ -36,7 +36,7 @@ teardown() {
   run bash -c '
     watch_file() { for f in "$@"; do echo "$f"; done; }
     use() { :; }
-    source "'"$TMPDIR/.envrc"'"
+    source "'"$TEST_TMPDIR/.envrc"'"
   '
   assert_success
   assert_line "flake.lock"
@@ -46,7 +46,7 @@ teardown() {
   run bash -c '
     watch_file() { for f in "$@"; do echo "$f"; done; }
     use() { :; }
-    source "'"$TMPDIR/.envrc"'"
+    source "'"$TEST_TMPDIR/.envrc"'"
   '
   assert_success
   assert_line "lefthook-nix-flake-check.sh"
@@ -56,7 +56,7 @@ teardown() {
   run bash -c '
     watch_file() { for f in "$@"; do echo "$f"; done; }
     use() { :; }
-    source "'"$TMPDIR/.envrc"'"
+    source "'"$TEST_TMPDIR/.envrc"'"
   '
   assert_success
   assert_line "nix/apps/confirm.sh"
@@ -66,7 +66,7 @@ teardown() {
   run bash -c '
     watch_file() { :; }
     use() { echo "use $*"; }
-    source "'"$TMPDIR/.envrc"'"
+    source "'"$TEST_TMPDIR/.envrc"'"
   '
   assert_success
   assert_line "use flake"
