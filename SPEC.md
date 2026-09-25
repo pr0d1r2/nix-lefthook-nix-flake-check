@@ -130,3 +130,6 @@ and want deterministic, portable flake validation wired into their git workflow.
 17. **The canonical lefthook configuration omitted shfmt commands**: The shfmt unit tests failed because neither
     pre-commit nor pre-push invoked the required shell formatter. Fixed by adding scoped shfmt commands with the
     required formatting flags and timeout.
+18. **The devShell overwrote the canonical lefthook configuration**: The setting hook unconditionally replaced the
+    repository's `lefthook.yml` with the assembled fragment-only configuration, dropping project-specific commands and
+    causing guardrails to fail. Fixed by generating the file only when no repository configuration exists.

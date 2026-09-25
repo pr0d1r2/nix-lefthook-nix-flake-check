@@ -16,13 +16,16 @@ pre-commit:
     shfmt:
       glob: "*.sh"
       run: timeout ${LEFTHOOK_SHFMT_TIMEOUT:-30} shfmt -d -i 2 -ci {staged_files}
+    nix-flake-check:
+      glob: "{*.nix,flake.lock}"
+      run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check
 
 pre-push:
   commands:
     markdownlint:
       glob: "*.md"
       exclude: "^(\\.claude/skills/)"
-      run: timeout ${LEFTHOOK_MARKDOWNLINT_TIMEOUT:-30} lefthook-markdownlint {push_files}
+      run: timeout ${LEFTHOOK_MARKDOWNLINT_TIMEOUT:-30} lefthook-markdownlint {all_files}
     markdownlint-agentic:
       glob: "*.md"
       exclude: "^(README|CHANGELOG|SPEC|CONTRIBUTING)\\.md$"
@@ -33,3 +36,6 @@ pre-push:
     shfmt:
       glob: "*.sh"
       run: timeout ${LEFTHOOK_SHFMT_TIMEOUT:-30} shfmt -d -i 2 -ci {all_files}
+    nix-flake-check:
+      glob: "{*.nix,flake.lock}"
+      run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check
