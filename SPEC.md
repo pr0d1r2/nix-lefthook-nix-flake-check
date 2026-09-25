@@ -127,3 +127,6 @@ and want deterministic, portable flake validation wired into their git workflow.
 16. **Bats setup failed in the guardrails shell**: The devShell exposed the Bats runner without sourcing `dev.sh`
     or providing its helper libraries, leaving `BATS_LIB_PATH` unset and causing every unit test to fail in `setup`.
     Fixed by adding Bats with its support libraries to the devShell and evaluating the documented hook there.
+17. **The canonical lefthook configuration omitted shfmt commands**: The shfmt unit tests failed because neither
+    pre-commit nor pre-push invoked the required shell formatter. Fixed by adding scoped shfmt commands with the
+    required formatting flags and timeout.
