@@ -76,20 +76,23 @@
         in
         set-and-setting-core.lib.mkDevShells {
           inherit pkgs;
-          basePackages = mat.packages ++ [ batsWithLibs pkgs.shfmt ];
-          settingHook = ''
-            ${self.packages.${sys}.setting}/bin/sync-setting .
-            _assemble_out="$(mktemp -d)"
-            FRAGMENTS="${builtins.concatStringsSep " " fragments}" \
-              out="$_assemble_out" \
-              FRAGMENTS_DIR="${set-and-setting-core}/setting/integrations/lefthook" \
-              bash "${set-and-setting-core}/setting/lib/assemble-lefthook.sh"
-            if [ ! -f lefthook.yml ]; then
-              cp -f "$_assemble_out/lefthook.yml" lefthook.yml
-            fi
-            rm -rf "$_assemble_out"
-            ${builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsWithLibs}" ] (builtins.readFile ./dev.sh)}
-          '';
+          basePackages = mat.packages ++ [
+            batsWithLibs
+            pkgs.shfmt
+          ];
+          settingHook = builtins.concatStringsSep "\n" [
+            "${self.packages.${sys}.setting}/bin/sync-setting ."
+            "_assemble_out=\"$(mktemp -d)\""
+            "FRAGMENTS=\"${builtins.concatStringsSep " " fragments}\" \\"
+            "  out=\"$_assemble_out\" \\"
+            "  FRAGMENTS_DIR=\"${set-and-setting-core}/setting/integrations/lefthook\" \\"
+            "  bash \"${set-and-setting-core}/setting/lib/assemble-lefthook.sh\""
+            "if [ ! -f lefthook.yml ]; then"
+            "  cp -f \"$_assemble_out/lefthook.yml\" lefthook.yml"
+            "fi"
+            "rm -rf \"$_assemble_out\""
+            (builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsWithLibs}" ] (builtins.readFile ./dev.sh))
+          ];
         }
       );
 
