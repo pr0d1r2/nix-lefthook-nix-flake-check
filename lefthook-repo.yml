@@ -1,0 +1,13 @@
+---
+
+pre-commit:
+  commands:
+    shfmt:
+      glob: "*.sh"
+      run: timeout ${LEFTHOOK_SHFMT_TIMEOUT:-30} shfmt -d -i 2 -ci {staged_files}
+
+pre-push:
+  commands:
+    shfmt:
+      glob: "*.sh"
+      run: timeout ${LEFTHOOK_SHFMT_TIMEOUT:-30} shfmt -d -i 2 -ci {all_files}

@@ -80,6 +80,7 @@
           basePackages = mat.packages ++ [
             nix-lefthook-bats-unit.packages.${sys}.default
             pkgs.bats
+            pkgs.shfmt
           ];
           settingHook =
             (builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsLib}" ] (builtins.readFile ./dev.sh))
