@@ -121,3 +121,5 @@ and want deterministic, portable flake validation wired into their git workflow.
 14. **`guardrails / check` failed with exit 127 after the Bats tests passed**: The shared guardrails workflow runs
     follow-up checks in the project dev shell, but the declared `nix-lefthook-bats-unit` input was not included in
     that shell, leaving `bats` unavailable. Fixed by adding its default package to `basePackages`.
+15. **`guardrails / check` failed with exit 127 after the Bats integration was added**: The `nix-lefthook-bats-unit` package supplies the lefthook Bats integration command, but not the `bats` test runner invoked by the shared workflow. Fixed by adding `pkgs.bats` to the devShell packages.
+16. **Bats tests failed when run with the current runner**: `tests/unit/dev.bats` overwrote Bats' `TMPDIR` workspace variable and removed it during teardown, causing runner files to disappear. Fixed by using a test-local temporary-directory variable.
