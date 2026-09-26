@@ -86,12 +86,14 @@
             (builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsLib}" ] (builtins.readFile ./dev.sh))
             + ''
               ${self.packages.${sys}.setting}/bin/sync-setting .
+              cp config/markdownlint.yml .markdownlint.yml
               _assemble_out="$(mktemp -d)"
               FRAGMENTS="${builtins.concatStringsSep " " fragments}" \
                 out="$_assemble_out" \
-                FRAGMENTS_DIR="${set-and-setting-core}/setting/integrations/lefthook" \
+              FRAGMENTS_DIR="${set-and-setting-core}/setting/integrations/lefthook" \
                 bash "${set-and-setting-core}/setting/lib/assemble-lefthook.sh"
               cp -f "$_assemble_out/lefthook.yml" lefthook.yml
+              sed -i 's/{push_files}/{all_files}/g' lefthook.yml
               rm -rf "$_assemble_out"
             '';
         }
