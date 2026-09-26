@@ -33,4 +33,6 @@ SH
   unset CONFIRM_SCRIPT
   run bash nix/apps/confirm.sh
   assert_failure
+  [ "$status" -eq 1 ]
+  assert_output "CONFIRM_SCRIPT must be set"
 }
