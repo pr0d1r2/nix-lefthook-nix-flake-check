@@ -4,7 +4,7 @@ pre-commit:
   commands:
     nix-flake-check:
       glob: "{*.nix,flake.lock}"
-      run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check {staged_files}
+      run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check
     shfmt:
       glob: "*.sh"
       run: timeout ${LEFTHOOK_SHFMT_TIMEOUT:-30} shfmt -d -i 2 -ci {staged_files}
@@ -13,7 +13,7 @@ pre-push:
   commands:
     nix-flake-check:
       glob: "{*.nix,flake.lock}"
-      run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check {all_files}
+      run: timeout "$(bash nix-flake-check-default-timeout.sh)" nix flake check
     shfmt:
       glob: "*.sh"
       run: timeout ${LEFTHOOK_SHFMT_TIMEOUT:-30} shfmt -d -i 2 -ci {all_files}
