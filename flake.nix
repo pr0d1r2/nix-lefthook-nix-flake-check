@@ -137,9 +137,10 @@
                 ++ mat.packages;
                 runtimeEnv = {
                   FRAGMENTS_DIR = "${set-and-setting-core}/setting/integrations/lefthook";
-                  ASSEMBLE_SCRIPT = "${set-and-setting-core}/setting/lib/assemble-lefthook.sh";
                   DETECT_SCRIPT = "${set-and-setting-core}/setting/lib/detect-fragments.sh";
-                  SETTING_SRC = "${self.packages.${pkgs.stdenv.hostPlatform.system}.setting}";
+                  ASSEMBLE_SCRIPT = "${self}/nix/apps/assemble-confirm.sh";
+                  REAL_ASSEMBLE_SCRIPT = "${set-and-setting-core}/setting/lib/assemble-lefthook.sh";
+                  SETTING_SRC = "${self}";
                   CONFIRM_SCRIPT = "${set-and-setting-core}/lib/confirm.sh";
                   CONFIRM_REV = set-and-setting-core.rev or "unknown";
                 };
