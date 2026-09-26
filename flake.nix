@@ -68,6 +68,7 @@
         pkgs:
         let
           mat = set-and-setting-core.lib.materializationFor { inherit pkgs fragments; };
+          batsLib = pkgs.bats.withLibraries (p: [ p.bats-support p.bats-assert p.bats-file ]);
           sys = pkgs.stdenv.hostPlatform.system;
         in
         set-and-setting-core.lib.mkDevShells {
@@ -76,7 +77,10 @@
             nix-lefthook-bats-unit.packages.${sys}.default
             pkgs.bats
           ];
-          settingHook = ''
+          settingHook = (builtins.replaceStrings
+            [ "@BATS_LIB_PATH@" ]
+            [ "${batsLib}" ]
+            (builtins.readFile ./dev.sh)) + ''
             ${self.packages.${sys}.setting}/bin/sync-setting .
             _assemble_out="$(mktemp -d)"
             FRAGMENTS="${builtins.concatStringsSep " " fragments}" \
