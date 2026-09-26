@@ -31,6 +31,7 @@
     {
       self,
       nixpkgs,
+      nix-lefthook-bats-unit,
       set-and-setting-core,
       ...
     }:
@@ -71,7 +72,7 @@
         in
         set-and-setting-core.lib.mkDevShells {
           inherit pkgs;
-          basePackages = mat.packages;
+          basePackages = mat.packages ++ [ nix-lefthook-bats-unit.packages.${sys}.default ];
           settingHook = ''
             ${self.packages.${sys}.setting}/bin/sync-setting .
             _assemble_out="$(mktemp -d)"
