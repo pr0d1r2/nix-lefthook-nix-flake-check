@@ -31,6 +31,7 @@
     {
       self,
       nixpkgs,
+      nix-lefthook-bats-unit,
       set-and-setting-core,
       ...
     }:
@@ -67,21 +68,34 @@
         pkgs:
         let
           mat = set-and-setting-core.lib.materializationFor { inherit pkgs fragments; };
+          batsLib = pkgs.bats.withLibraries (p: [
+            p.bats-support
+            p.bats-assert
+            p.bats-file
+          ]);
           sys = pkgs.stdenv.hostPlatform.system;
         in
         set-and-setting-core.lib.mkDevShells {
           inherit pkgs;
-          basePackages = mat.packages;
-          settingHook = ''
-            ${self.packages.${sys}.setting}/bin/sync-setting .
-            _assemble_out="$(mktemp -d)"
-            FRAGMENTS="${builtins.concatStringsSep " " fragments}" \
-              out="$_assemble_out" \
+          basePackages = mat.packages ++ [
+            nix-lefthook-bats-unit.packages.${sys}.default
+            pkgs.bats
+            pkgs.shfmt
+          ];
+          settingHook =
+            (builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsLib}" ] (builtins.readFile ./dev.sh))
+            + ''
+              ${self.packages.${sys}.setting}/bin/sync-setting .
+              cp config/markdownlint.yml .markdownlint.yml
+              _assemble_out="$(mktemp -d)"
+              FRAGMENTS="${builtins.concatStringsSep " " fragments}" \
+                out="$_assemble_out" \
               FRAGMENTS_DIR="${set-and-setting-core}/setting/integrations/lefthook" \
-              bash "${set-and-setting-core}/setting/lib/assemble-lefthook.sh"
-            cp -f "$_assemble_out/lefthook.yml" lefthook.yml
-            rm -rf "$_assemble_out"
-          '';
+                bash "${set-and-setting-core}/setting/lib/assemble-lefthook.sh"
+              cp -f "$_assemble_out/lefthook.yml" lefthook.yml
+              sed -i 's/{push_files}/{all_files}/g' lefthook.yml
+              rm -rf "$_assemble_out"
+            '';
         }
       );
 
@@ -123,9 +137,10 @@
                 ++ mat.packages;
                 runtimeEnv = {
                   FRAGMENTS_DIR = "${set-and-setting-core}/setting/integrations/lefthook";
-                  ASSEMBLE_SCRIPT = "${set-and-setting-core}/setting/lib/assemble-lefthook.sh";
                   DETECT_SCRIPT = "${set-and-setting-core}/setting/lib/detect-fragments.sh";
-                  SETTING_SRC = "${self.packages.${pkgs.stdenv.hostPlatform.system}.setting}";
+                  ASSEMBLE_SCRIPT = "${self}/nix/apps/assemble-confirm.sh";
+                  REAL_ASSEMBLE_SCRIPT = "${set-and-setting-core}/setting/lib/assemble-lefthook.sh";
+                  SETTING_SRC = "${self}";
                   CONFIRM_SCRIPT = "${set-and-setting-core}/lib/confirm.sh";
                   CONFIRM_REV = set-and-setting-core.rev or "unknown";
                 };
