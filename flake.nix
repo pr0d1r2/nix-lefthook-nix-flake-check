@@ -55,14 +55,43 @@
       ];
     in
     {
-      packages = forAllSystems (pkgs: {
-        default = pkgs.writeShellApplication {
-          name = "lefthook-nix-flake-check";
-          runtimeInputs = [ pkgs.nix ];
-          text = builtins.readFile ./lefthook-nix-flake-check.sh;
-        };
-        setting = (set-and-setting-core.lib.mkSetting { inherit pkgs; }).materialized;
-      });
+      packages = forAllSystems (
+        pkgs:
+        let
+          mat = set-and-setting-core.lib.materializationFor { inherit pkgs fragments; };
+        in
+        {
+          default = pkgs.writeShellApplication {
+            name = "lefthook-nix-flake-check";
+            runtimeInputs = [ pkgs.nix ];
+            text = builtins.readFile ./lefthook-nix-flake-check.sh;
+          };
+          setting = (set-and-setting-core.lib.mkSetting { inherit pkgs; }).materialized;
+          confirm = pkgs.writeShellApplication {
+            name = "confirm";
+            runtimeInputs = [
+              pkgs.bash
+              pkgs.coreutils
+              pkgs.diffutils
+              pkgs.findutils
+              pkgs.gawk
+              pkgs.git
+              pkgs.gnugrep
+            ]
+            ++ mat.packages;
+            runtimeEnv = {
+              FRAGMENTS_DIR = "${set-and-setting-core}/setting/integrations/lefthook";
+              DETECT_SCRIPT = "${set-and-setting-core}/setting/lib/detect-fragments.sh";
+              ASSEMBLE_SCRIPT = "${self}/nix/apps/assemble-confirm.sh";
+              REAL_ASSEMBLE_SCRIPT = "${set-and-setting-core}/setting/lib/assemble-lefthook.sh";
+              SETTING_SRC = "${self}";
+              CONFIRM_SCRIPT = "${set-and-setting-core}/lib/confirm.sh";
+              CONFIRM_REV = set-and-setting-core.rev or "unknown";
+            };
+            text = builtins.readFile ./nix/apps/confirm.sh;
+          };
+        }
+      );
 
       devShells = forAllSystems (
         pkgs:
@@ -81,6 +110,7 @@
             nix-lefthook-bats-unit.packages.${sys}.default
             pkgs.bats
             pkgs.shfmt
+            self.packages.${sys}.confirm
           ];
           settingHook =
             (builtins.replaceStrings [ "@BATS_LIB_PATH@" ] [ "${batsLib}" ] (builtins.readFile ./dev.sh))
