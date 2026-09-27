@@ -65,8 +65,7 @@ and want deterministic, portable flake validation wired into their git workflow.
 | Input | Source | Purpose |
 | --- | --- | --- |
 | `nixpkgs-lock` | `github:pr0d1r2/nixpkgs-lock` | Pinned nixpkgs |
-| `nix-dev-shell-agentic` | `github:pr0d1r2/nix-dev-shell-agentic` | Agentic devShell builder |
-| `nix-lefthook-bats-unit` | `github:pr0d1r2/nix-lefthook-bats-unit` | Bats unit test runner |
+| `set-and-setting` | `github:pr0d1r2/set-and-setting` | Standard: `mkConsumerFlake` supplies devShells, checks and `confirm` |
 
 ## §T — Tasks
 
@@ -118,3 +117,12 @@ and want deterministic, portable flake validation wired into their git workflow.
     no longer exports `lib` directly — the library functions moved to a nested `set-and-setting/set-and-setting`
     input. Fixed by adding a `set-and-setting-core` follows input that tracks the inner `set-and-setting` and
     updating all `set-and-setting.lib.*` and `${set-and-setting}/...` references to use `set-and-setting-core`.
+14. **Hand-rolled consumer flake and local `confirm` froze the repo on an old standard**: `flake.nix` assembled
+    devShells, checks and a `confirm` app from `set-and-setting-core` with a fixed fragment list, so the shell
+    lacked `lefthook-tdd-order-bats` (CI exit 127) and pin refreshes could not adopt the current standard.
+    Fixed by switching to `mkConsumerFlake` (package via `extraPackages`, `consumer-cli` via `extraChecks`),
+    dropping `nix/apps/confirm.sh` and the unused inputs, and adding `[*.sh] switch_case_indent = true`.
+15. **Vendored-era specs broke the bats run**: `dev.bats`/`envrc.bats` reassigned and removed `TMPDIR`
+    (killing the shared bats run directory), and `lefthook-markdownlint.bats`, `lefthook-shfmt.bats`,
+    `markdownlint.bats` plus four `lefthook.yml` cases asserted generated, gitignored config. Fixed by using
+    `TEST_TEMP` and deleting the stale specs.
