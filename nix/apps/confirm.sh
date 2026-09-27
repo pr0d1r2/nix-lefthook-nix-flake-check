@@ -5,4 +5,4 @@ if [ -z "${CONFIRM_SCRIPT:-}" ]; then
   exit 1
 fi
 
-bash "$CONFIRM_SCRIPT"
+bash "$CONFIRM_SCRIPT" "$@"

@@ -36,3 +36,14 @@ SH
   [ "$status" -eq 1 ]
   assert_output "CONFIRM_SCRIPT must be set"
 }
+
+@test "forwards arguments to CONFIRM_SCRIPT" {
+  cat >"$TMP/args-confirm.sh" <<'SH'
+#!/usr/bin/env bash
+printf '%s\n' "$@"
+SH
+  chmod +x "$TMP/args-confirm.sh"
+  CONFIRM_SCRIPT="$TMP/args-confirm.sh" run bash nix/apps/confirm.sh --timeout 600
+  assert_success
+  assert_output $'--timeout\n600'
+}
