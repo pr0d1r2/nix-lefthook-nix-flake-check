@@ -127,6 +127,7 @@
               pkgs.writeShellApplication {
                 name = "confirm";
                 runtimeInputs = [
+                  pkgs.bash
                   pkgs.coreutils
                   pkgs.diffutils
                   pkgs.findutils
