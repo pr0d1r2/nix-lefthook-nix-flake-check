@@ -54,15 +54,16 @@ missed.
 
 ## The guardrails are this repository's own
 
-This repository is gated by `lefthook.yml`. Before a machine-authored branch is
-pushed, it is run against that gate: the same checks a human gets on
-`git commit`, in the same environment continuous integration uses. A change the
-gate refuses is not pushed and no pull request is opened for it.
+This repository ships `lefthook-remote.yml` as its lefthook gate. Before a
+machine-authored branch is pushed, it is run against that gate: the same checks
+a human gets on `git commit`, in the same environment continuous integration
+uses. A change the gate refuses is not pushed and no pull request is opened for
+it.
 
 Run it yourself:
 
 ```sh
-lefthook run pre-commit --all-files
+LEFTHOOK_CONFIG=lefthook-remote.yml lefthook run pre-commit --all-files
 ```
 
 That property is recent rather than original, which is the honest way to put
