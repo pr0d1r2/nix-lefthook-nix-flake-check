@@ -6,13 +6,23 @@
 > what it may not, and what to check before trusting anything in this tree.
 <!-- hallucinogen:autonomy-disclaimer end -->
 
-[![CI](https://github.com/pr0d1r2/nix-lefthook-nix-flake-check/actions/workflows/ci.yml/badge.svg)](https://github.com/pr0d1r2/nix-lefthook-nix-flake-check/actions/workflows/ci.yml)
+[![CI](https://github.com/pr0d1r2/nix-lefthook-nix-flake-check/actions/workflows/ci.yml/badge.svg)](https://github.com/pr0d1r2/nix-lefthook-nix-flake-check/actions/workflows/ci.yml) [![NixOS 26.05](https://img.shields.io/badge/NixOS-26.05-blue.svg?logo=nixos)](https://nixos.org)
 
 > This code is LLM-generated and validated through an automated integration process using [lefthook](https://github.com/evilmartians/lefthook) git hooks, [bats](https://github.com/bats-core/bats-core) unit tests, and GitHub Actions CI.
 
 Lefthook-compatible [nix flake check](https://nix.dev/manual/nix/latest/command-ref/new-cli/nix3-flake-check) runner, packaged as a Nix flake.
 
 Runs `nix flake check` to catch evaluation errors, type mismatches, and missing outputs at commit time.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  consumer["consumer lefthook.yml"] -->|"remotes"| remote["lefthook-remote.yml"]
+  remote -->|"pre-commit: {*.nix,flake.lock}"| nix_flake_check["nix flake check"]
+  remote -->|"pre-push: {*.nix,flake.lock}"| nix_flake_check["nix flake check"]
+  nix_flake_check -->|"exit status"| consumer
+```
 
 ## Usage
 
@@ -81,6 +91,19 @@ If not using direnv, enter the shell manually:
 ```bash
 nix develop
 bats tests/unit/
+```
+
+### Development architecture
+
+```mermaid
+flowchart LR
+  envrc[".envrc"] -->|"use flake"| flake["flake.nix"]
+  flake -->|"mkConsumerFlake"| sas["set-and-setting"]
+  flake -->|"devShell"| shell["dev shell"]
+  shell -->|"on entry"| devsh["dev.sh"]
+  sas -->|"assembled hooks"| lh["lefthook.yml"]
+  lh -->|"pre-commit / pre-push"| checks["linters, bats, nix flake check"]
+  ci[".github/workflows/ci.yml"] -->|"guardrails.yml"| checks
 ```
 
 ## License
